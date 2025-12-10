@@ -3,10 +3,10 @@
 --====================================================================
 SELECT 
     od.*,
-    (SELECT o.customer_id 
-     FROM orders AS o 
-     WHERE o.order_id = od.order_id) AS customer_id
-FROM order_details AS od;
+    o.customer_id
+FROM order_details AS od
+JOIN orders AS o 
+    ON o.id = od.order_id;
 --====================================================================
 --  2. WHERE з підзапитом: shipper_id = 3
 --====================================================================
@@ -42,6 +42,8 @@ GROUP BY order_id;
 --  5. Функція: divide FLOAT / застосувати до quantity
 --====================================================================
 -- Спершу видаляємо, якщо існує:
+USE mydb;
+
 DROP FUNCTION IF EXISTS divide_float;
 -- Створення функції:
 DELIMITER $$
@@ -61,4 +63,9 @@ DELIMITER ;
 SELECT id, order_id, product_id, quantity,
        divide_float(quantity, 2) AS divided_quantity
 FROM order_details;
+
+-- щоб переконатися чи створена функція в базі можна виконати:
+SELECT ROUTINE_NAME
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_SCHEMA = 'mydb';
 --====================================================================
